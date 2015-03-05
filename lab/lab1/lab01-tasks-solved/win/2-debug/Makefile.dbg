@@ -1,0 +1,15 @@
+OBJ_LIST = main.obj add.obj
+CFLAGS   = /nologo /W4 /EHsc /Za /DEBUG__
+EXE_NAMES = main.exe
+
+main.exe: $(OBJ_LIST)
+	cl $(CFLAGS) /Fe$@ $**
+
+main.obj: main.c
+	cl $(CFLAGS) main.c /c
+
+add.obj: add.c
+	cl $(CFLAGS) add.c /c
+
+clean:
+	del *.obj *.exe
