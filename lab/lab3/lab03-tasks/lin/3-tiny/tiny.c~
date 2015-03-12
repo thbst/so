@@ -46,7 +46,7 @@ static void alloc_mem(void);
  */
 static void do_redirect(int filedes, const char *filename)
 {
-	//int rc;
+	int rc;
 	int fd;
 
 	/* TODO 3 - Redirect filedes into fd representing filename */
