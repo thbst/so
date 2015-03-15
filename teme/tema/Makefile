@@ -1,11 +1,15 @@
-CC = gcc
-CFLAGS = -Wall -g
+CC=gcc
+CFLAGS= -Wall -g
 
-all: tema
+build: tema
 
 tema: tema.o util.o
+	$(CC) $(CFLAGS) -o tema tema.o util.o
 
 .PHONY: clean
 
 clean:
 	rm -f *.o *~ tema
+
+zip:
+	zip CC334_CristianLupu_SO_tema.zip tema.c util.c util.h README Makefile GNUmakefile

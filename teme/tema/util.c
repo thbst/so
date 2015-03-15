@@ -13,3 +13,10 @@ void functie()
 	printf("Current line %d in file %s \n", __LINE__, __FILE__ );
 	dprintf("test message from util.c\n");
 }
+
+/*
+int main()
+{
+	return 0;
+}
+*/
