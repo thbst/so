@@ -1,0 +1,10 @@
+add tema
+add hash
+print hash.out
+find tema hash.out
+remove tema
+find tema hash.out
+print hash.out
+resize double
+print
+print_bucket 185 hash2.out
