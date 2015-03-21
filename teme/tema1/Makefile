@@ -13,4 +13,4 @@ clean:
 	rm -f *.o *~ tema1
 
 zip:
-	zip CC334_CristianLupu_SO_tema1.zip tema1.c util.c util.h README Makefile GNUmakefile
+	zip Grupa_NumePrenume_SO_tema1.zip tema1.c util.c util.h README Makefile GNUmakefile
