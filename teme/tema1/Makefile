@@ -1,16 +1,11 @@
-CC=gcc
-CFLAGS= -Wall -g
-OBJECTS = tema1.o util.o hash.o
+CC = cl
+CFLAGS= /nologo /W3
+PGR = tema1
 
-build: tema1
-
-tema1: $(OBJECTS)
-	$(CC) $(CFLAGS) -o tema1 $(OBJECTS)
-
-.PHONY: clean
+all: build
+build: hash.c tema1.c util.c
+	$(CC) $(CFLAGS) /Fe$(PGR).exe hash.c tema1.c util.c
 
 clean:
-	rm -f *.o *~ tema1
+	del $(PGR).exe *.obj
 
-zip:
-	zip Grupa_NumePrenume_SO_tema1.zip tema1.c util.c util.h README Makefile GNUmakefile

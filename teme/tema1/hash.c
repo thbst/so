@@ -1,3 +1,4 @@
+
 #include "hash.h"
 
 /**
@@ -7,12 +8,12 @@
  */
 unsigned int hash(const char *str, unsigned int hash_length)
 {
-	unsigned int hash_result = 5381;
+	unsigned int hash = 5381;
 	int c;
 
 	while ( (c = *str++) != 0 )
-		hash_result = ((hash_result << 5) + hash_result) + c; /* hash * 33 + c */
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 
-	return (hash_result % hash_length);
+	return (hash % hash_length);
 }
 
