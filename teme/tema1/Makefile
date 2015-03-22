@@ -1,5 +1,5 @@
 CC = cl
-CFLAGS= /nologo /W3
+CFLAGS= /nologo /W3 -D CRT_SECURE_NO_DEPRECATE
 PGR = tema1
 
 all: build
