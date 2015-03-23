@@ -1,14 +1,14 @@
-// Nume Prenume Grupa - Tema 1 Multi-platform Development
+/* Lupu Cristian CC334 - Tema 1 Multi-platform Development */
 #ifndef _UTIL_H
 #define _UTIL_H 1
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "util.h"
 #include "hash.h"
-// chunk size
-#define CSIZE 32
+#define DBG 0
+#define BUFSZ 20001
+#define CMDSZ 32
 
 /* useful macro for handling error codes */
 #define DIE(assertion, call_description)				\
@@ -21,51 +21,91 @@
 		}							\
 	} while(0)
 
-
+/*
 #ifdef DEBUG
 #define dprintf(msg,...) printf("[%s]:%d " msg,__FILE__,__LINE__,##__VA_ARGS__)
 #else
 #define dprintf(msg,...)
 #endif
+*/
 
-//structura nod
-typedef struct node {
-	char* data;
-	struct node* next;
-} node;
+enum Bool {
+	FALSE = 0,
+	TRUE = 1
+};
 
-//structura hash table
-typedef struct hash_t {
-	node** head;
-	int length;
-} hash_t;
+/* Structure for a Node of a list */
+typedef struct Node_ {
+	char *data;
+	struct Node_ *next;
+}Node;
 
-//functie ce aloca memorie pentru un nou hash_table de anumita marime
-//data ca parametru
-hash_t* new_hash(int hash_size);
-//cauta cuvant in hashtable si scrie True/False pe o linie noua in
-//fisierul specificat sau la consola daca acest parametru lipseste
-node* find_word(hash_t* hash_table, char *search_word);
-//adaug cuvant in hash
-int add_word(hash_t* hash_table, char* new_word);
-//sterge cuvant
-int remove_word(hash_t* hash_table, char* data);
-//sterge tabel
-void clear_table(hash_t* hash_table);
-//afiseaza buchet in fisier
-void print_bucket(hash_t* hash_table, int key, FILE *f);
-//afiseara hash in fisier
-void print_hash(hash_t* hash_table, FILE* f);
-//redimensioneaza hash la o noua marime
-void resize_hash(int new_size, hash_t* hash_table);
-//dubleaza marimea hash-ului
-void resize_double(hash_t* hash_table);
-//injumatateste marimea hash-ului
-void resize_halve(hash_t* hash_table);
-//ruleaza comenzi
-int run_command(hash_t* hash_table, char* line);
-//citeste fisier
-void read_file(hash_t* hash_table, FILE* f);
-//citeste input
-void read_input(int argc, char** argv, hash_t* hash_table);
+typedef Node* List;
+
+/* Deallocates resources and destroys the list */
+void destroyList(List *list);
+
+/* Inserts an element to a list. Returns TRUE on success, FALSE otherwise */
+int addElement(List *list, const char *elem);
+
+/* Searches an element in a list. Returns TRUE if found, FALSE otherwise */
+int findElement(const List list, const char *elem);
+
+/* Deletes an element in a list. Returns TRUE if element was found and deleted,
+ * FALSE otherwise */
+int deleteElement(List *list, const char *elem);
+
+/* Print List to file. Return TRUE if List is empty, FALSE otherwise. */
+int printList(const List list, FILE *file);
+
+/* Structure that holds a Pair key-value for words with the same hash */
+typedef struct Bucket_ {
+	List words;
+}Bucket;
+
+/* Structure for a Hash Table */
+typedef struct HashTable_ {
+	unsigned int hashSize;
+	Bucket *table;
+}HashTable;
+
+/* Creates a Hash Table with a given hashSize for the hash function */
+void initHashTable(HashTable **table, const unsigned int hashSize);
+
+/* Destroys a Hash Table and releases allocated memory. */
+void destroyHashTable(HashTable **table);
+
+/* Adds a word to the Hash Table. If it already exists, it does nothing.
+ * Returns TRUE if word is added successfully, FALSE otherwise */
+int addWord(HashTable *table, const char *word);
+
+/* Removes a word from the Hash Table. The word could be inexistent. Returns
+ * TRUE if element is found and deleted, FALSE otherwise */
+int deleteWord(HashTable *table, const char *word);
+
+/* Searches for a word in the Hash Table. Returns TRUE if found, FALSE
+ * otherwise */
+int findWord(const HashTable table, const char *word);
+
+/* Prints bucket to a FILE. Each word is separated by space. Returns TRUE if
+ * Bucket elements exist, FALSE otherwise. */
+int printBucket(
+		const HashTable table,
+		FILE *file,
+		const unsigned int bucketIndex);
+
+/* Prints HashTable to a FILE. Each bucket is printed on a separate line. */
+void printTable(const HashTable table, FILE *file);
+
+/* Doubles the size of the hash function of the Hash Table. Recomputes the
+ * entire table by creating a new one. Returns TRUE on success, FALSE otherwise
+ * */
+int doubleTable(HashTable **table);
+
+/* Halves the size of the hash function of the Hash Table. Recomputes the
+ * entire table by creating a new one. Returns TRUE on success, FALSE otherwise
+ * */
+int halveTable(HashTable **table);
+
+
 #endif
