@@ -1,0 +1,5 @@
+readelf -x .rodata adr_space
+valgrind --tool=memcheck ./alloc --track-origins=yes
+
+valgrind --tool=memcheck ./struct --track-origins=yes --leak-check=full
+
