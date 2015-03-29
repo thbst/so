@@ -1,206 +1,315 @@
-/* Lupu Cristian CC334 - Tema 1 Multi-platform Development */
+/* Nume Prenume Grupa - Tema 1 Multi-platform Development */
 #include "util.h"
 
 #define DEBUG 1
 #ifdef DEBUG
-#define dprintf(msg,...) printf("[%s]:%d " msg,__FILE__,__LINE__,##__VA_ARGS__)
+#define dprintf(msg,...) \
+	printf("[%s]:%d " msg, __FILE__, __LINE__, ##__VA_ARGS__)
 #else
 #define dprintf(msg,...)
 #endif
 
+void clear_list(List *list) {
+	Node *node_p;
+	Node *top = *list;
 
-void destroyList(List *list) {
-	Node *head = *list;
-	Node *p;
-	while (head) {
-		p = head;
-		head = head->next;
-		free(p->data);
-		free(p);
+	for (;top;) {
+		node_p = top;
+		top = top->next;
+		free(node_p->data);
+		free(node_p);
 	}
 }
 
-int addElement(List *list, const char *elem) {
-	Node *head = NULL;
-	Node *newNode = NULL;
-	unsigned int len;
-	if (strcmp("", elem) == 0)
-		return FALSE;
-	head = *list;
-	newNode = (Node *)calloc(1, sizeof(Node));
-	DIE(newNode == NULL, "Could not create new Node");
+int add_member(List *list, char *member) {
+	Node *top = NULL;
+	Node *node_new = NULL;
 
-	/* Need to allocate len + 1, because of '\0' character */
-	len = strlen(elem);
-	newNode->data = (char *)calloc(len + 1, sizeof(char));
-	DIE(newNode->data == NULL, "Could not create space for data");
-	memcpy(newNode->data, elem, len + 1);
-	newNode->next = NULL;
+	if (strcmp("", member) == 0)
+		return 0;
 
-	if (head == NULL) {
-		*list = newNode;
-		return TRUE;
+	top = *list;
+	node_new = (Node *)malloc(sizeof(Node));
+	DIE(NULL == node_new, "Error creating new node");
+
+	node_new->data = (char *)calloc(strlen(member) + 1, sizeof(char));
+	DIE(NULL == node_new->data, "Error allocating memory");
+
+	memcpy(node_new->data, member, strlen(member) + 1);
+	node_new->next = NULL;
+
+	if (top == NULL) {
+		*list = node_new;
+		return 1;
 	}
 
-	while (head->next) {
-		head = head->next;
-	}
+	for (;top->next;)
+		top = top->next;
 
-	head->next = newNode;
-	return TRUE;
+	top->next = node_new;
+	return 1;
 }
 
-int findElement(const List list, const char *elem) {
-	Node *head = list;
-	if (head == NULL)
-		return FALSE;
+int find_member(List list, char *member) {
+	Node *top = list;
+	if (top == NULL)
+		return 0;
 
-	while (head) {
-		if (strcmp(elem, head->data) == 0)
-			return TRUE;
-		head = head->next;
+	for (;top;) {
+		if (strcmp(member, top->data) == 0)
+			return 1;
+		top = top->next;
 	}
-	return FALSE;
+	return 0;
 }
 
-int deleteElement(List *list, const char *elem) {
-	Node *head = *list;
-	if (head == NULL)
-		return FALSE;
+int remove_member(List *list, char *member) {
+	Node *top = *list;
+	if (top == NULL)
+		return 0;
 
-	/* Element is at the beginning of the list */
-	if (strcmp(elem, head->data) == 0) {
+	if (strcmp(member, top->data) == 0) {
 		*list = (*list)->next;
-		free(head->data);
-		free(head);
-		return TRUE;
+		free(top->data);
+		free(top);
+		return 1;
 	}
 
-	while (head->next) {
-		if (strcmp(head->next->data, elem) == 0) {
-			Node *temp = head->next;
-			head->next = head->next->next;
-			free(temp->data);
-			free(temp);
-			return TRUE;
+	for (;top->next;) {
+		if (strcmp(member, top->next->data) == 0) {
+			Node *aux = top->next;
+			top->next = top->next->next;
+			free(aux->data);
+			free(aux);
+			return 1;
 		}
-		head = head->next;
+		top = top->next;
 	}
-	return FALSE;
+	return 0;
 }
 
-int printList(const List list, FILE *file) {
-	Node *head = list;
-	if (head == NULL || (head && head->data == NULL) || (head &&
-			strcmp("", head->data) == 0))
-		return FALSE;
-	while (head) {
-		fprintf(file, "%s", head->data);
-		head = head->next;
-		if (head)
+int print_node(FILE *file, List list) {
+	Node *top = list;
+	if (top == NULL)
+		return 0;
+
+	if (top && top->data == NULL)
+		return 0;
+
+	if (top && strcmp("", top->data) == 0)
+		return 0;
+
+	for (;top;) {
+		fprintf(file, "%s", top->data);
+		top = top->next;
+		if (top)
 			fprintf(file, " ");
 	}
-	return TRUE;
+	return 1;
 }
 
+void init_hash(HashTable **hash_t, int hash_length) {
+	*hash_t = (HashTable *)malloc(sizeof(HashTable));
+	DIE((*hash_t) == NULL, "Error allocating memory for hash");
 
-/* Resizes a Hash Table by multiplying the hashSize with multiplyFactor and
- * recomputing the entire table */
-static int resizeTable(HashTable **table, const float multiplyFactor);
-
-void initHashTable(HashTable **table, const unsigned int hashSize) {
-	*table = (HashTable *)calloc(1, sizeof(HashTable));
-	DIE((*table) == NULL, "Could not allocate enough memory for Hash Table");
-
-	(*table)->hashSize = hashSize;
-	(*table)->table = (Bucket *)calloc(hashSize, sizeof(Bucket));
-	DIE((*table)->table == NULL, "Could not allocate enough memory for "\
-		"buckets");
+	(*hash_t)->hash_length = hash_length;
+	(*hash_t)->hash_t = (Bucket *)calloc(hash_length, sizeof(Bucket));
+	DIE((*hash_t)->hash_t == NULL, "Error allocating memory for buckets");
 }
 
-void destroyHashTable(HashTable **table) {
-	unsigned int i;
-	if ((*table) == NULL) {
+void free_hash(HashTable **hash_t) {
+	int i=0;
+	if ((*hash_t) == NULL)
 		return;
+
+	while (i < (*hash_t)->hash_length) {
+		clear_list(&(*hash_t)->hash_t[i].words);
+		i++;
+	}
+	free((*hash_t)->hash_t);
+	free((*hash_t));
+}
+
+int add_word(HashTable *hash_t, char *word) {
+	int i;
+	DIE(hash_t == NULL, "Error during hash_t call");
+
+	i = hash(word, hash_t->hash_length);
+	if (find_member(hash_t->hash_t[i].words, word) == 0) {
+		return add_member(&hash_t->hash_t[i].words, word);
 	}
 
-	for (i = 0; i < (*table)->hashSize; ++i) {
-		destroyList(&(*table)->table[i].words);
-	}
-	free((*table)->table);
-	free((*table));
+	return 0;
 }
 
-int addWord(HashTable *table, const char *word) {
-	unsigned int index;
-	DIE(table == NULL, "Table inexistnt");
+int remove_word(HashTable *hash_t, char *word) {
+	int i;
+	DIE(hash_t == NULL, "Error during hash_t call");
 
-	index = hash(word, table->hashSize);
-	if (findElement(table->table[index].words, word) == FALSE) {
-		int retVal = addElement(&table->table[index].words, word);
-		if (retVal == TRUE)
-			return TRUE;
-	}
-	else
-		return TRUE;
-
-	return FALSE;
+	i = hash(word, hash_t->hash_length);
+/*	dprintf("removed %s", word);*/
+	return remove_member(&hash_t->hash_t[i].words, word);
 }
 
-int deleteWord(HashTable *table, const char *word) {
-	unsigned int index;
-	DIE(table == NULL, "Table inexistent");
+int print_bucket(FILE *file,HashTable hash_t,int key) {
+	DIE(key >= hash_t.hash_length, "Error in buffer size");
 
-	index = hash(word, table->hashSize);
-	return deleteElement(&table->table[index].words, word);
+	return print_node(file, hash_t.hash_t[key].words);
 }
 
-int findWord(const HashTable table, const char *word) {
-	unsigned int index = hash(word, table.hashSize);
-
-	return findElement(table.table[index].words, word);
-}
-
-int printBucket(
-		const HashTable table,
-		FILE *file,
-		const unsigned int bucketIndex) {
-	DIE(bucketIndex >= table.hashSize, "Index out of bounds");
-
-	return printList(table.table[bucketIndex].words, file);
-}
-
-void printTable(const HashTable table, FILE *file) {
-	unsigned int i;
-	for (i = 0; i < table.hashSize; ++i) {
-		if (printBucket(table, file, i) == TRUE) {
+void print_hash(FILE *file, HashTable hash_t) {
+	int i=0;
+	while (i < hash_t.hash_length) {
+		if (print_bucket(file, hash_t, i) == 1) {
 			fprintf(file, "\n");
 		}
+		i++;
 	}
 }
 
-int doubleTable(HashTable **table) {
-	return resizeTable(table, 2);
+int find_word(char *word, HashTable hash_t) {
+	int i = hash(word, hash_t.hash_length);
+
+	return find_member(hash_t.hash_t[i].words, word);
 }
 
-int halveTable(HashTable **table) {
-	return resizeTable(table, 0.5);
-}
-
-static int resizeTable(HashTable **table, const float multiplyFactor) {
+static int resize_hash(HashTable **hash_t, float multiplyFactor) {
 	HashTable *newTable = NULL;
-	unsigned int i;
-	float newSize = (float)(*table)->hashSize * multiplyFactor;
-	initHashTable(&newTable, (unsigned int)newSize);
+	int i=0;
+	float newSize = (float)(*hash_t)->hash_length * multiplyFactor;
+	init_hash(&newTable, (int)newSize);
 
-	for (i = 0; i < (*table)->hashSize; ++i) {
-		List list = (*table)->table[i].words;
-		while (list) {
-			addWord(newTable, list->data);
+	while (i < (*hash_t)->hash_length) {
+		List list = (*hash_t)->hash_t[i].words;
+		for (;list;) {
+			add_word(newTable, list->data);
 			list = list->next;
 		}
+	i++;
 	}
-	destroyHashTable(table);
-	*table = newTable;
-	return TRUE;
+	free_hash(hash_t);
+	*hash_t = newTable;
+	return 1;
+}
+
+
+int resize_double(HashTable **hash_t) {
+	return resize_hash(hash_t, 2);
+}
+
+int resize_half(HashTable **hash_t) {
+	return resize_hash(hash_t, 0.5);
+}
+
+void print_word(FILE *f, int result) {
+	if (result == 1)
+		fprintf(f, "True\n\n");
+	else if (result == 0)
+		fprintf(f, "False\n\n");
+}
+
+void run_operation(HashTable **hashTable, char buf[3][BUFSIZE]) {
+	char command[CMDSIZE];
+	char *token;
+	int bucket, size, result;
+	FILE *f;
+
+	token = strtok(buf[0], " \n");
+	if (token == NULL || strcmp(token, "") == 0)
+		return;
+	strcpy(command, token);
+
+	token = strtok(NULL, " \n");
+	if (token) {
+		strcpy(buf[1], token);
+	}
+	token = strtok(NULL, " \n");
+	if (token) {
+		strcpy(buf[2], token);
+	}
+
+	if (strcmp(command, "print_bucket") == 0) {
+		bucket = atoi(buf[1]);
+		if (strcmp(buf[2], "") && buf[2] != 0) {
+			f = fopen(buf[2], "a");
+			DIE(f == NULL, "Error opening file");
+			if (print_bucket(f,**hashTable, bucket) == 1) {
+				fprintf(f, "\n\n");
+				dprintf("");
+			}
+			else
+				fprintf(f, "\n");
+			fclose(f);
+		}
+		else {
+			if (print_bucket(stdout,**hashTable, bucket) == 1) {
+				fprintf(stdout, "\n\n");
+				dprintf("");
+			}
+			else
+				fprintf(stdout, "\n");
+		}
+
+		return;
+	}
+	if (strcmp(command, "print") == 0) {
+		if (strcmp(buf[1], "") && buf[1] != 0) {
+			f = fopen(buf[1], "a");
+			DIE(f == NULL, "Error opening file");
+			print_hash(f, **hashTable);
+			fprintf(f, "\n");
+			fclose(f);
+		}
+		else {
+			print_hash(stdout, **hashTable);
+			printf("\n");
+		}
+		return;
+	}
+	if (strcmp(command, "find") == 0) {
+		if (buf[1]) {
+			result = find_word(buf[1], **hashTable);
+			if (buf[2] && strcmp(buf[2], "") != 0) {
+				f = fopen(buf[2], "a");
+				DIE(f == NULL, "Error opening file");
+				print_word(f, result);
+				fclose(f);
+			}
+			else {
+				print_word(stdout, result);
+			}
+		}
+		return;
+	}
+	if (strcmp(command, "remove") == 0) {
+		remove_word(*hashTable, buf[1]);
+		return;
+	}
+	if (strcmp(command, "add") == 0) {
+		add_word(*hashTable, buf[1]);
+		return;
+	}
+	if (strcmp(command, "clear") == 0) {
+		size = (*hashTable)->hash_length;
+		free_hash(hashTable);
+		init_hash(hashTable, size);
+		return;
+	}
+	if (strcmp(command, "resize") == 0) {
+		if (strcmp("halve",buf[1]) == 0) {
+			resize_half(hashTable);
+		}
+		else if (strcmp("double",buf[1]) == 0) {
+			resize_double(hashTable);
+		}
+		return;
+	}
+}
+
+void parse_file(FILE *file, HashTable **hashTable) {
+	char buf[3][BUFSIZE];
+	for (;fgets(buf[0], BUFSIZE, file) != NULL;) {
+		run_operation(hashTable, buf);
+		memset(buf, 0, 3 * BUFSIZE * sizeof(char));
+	}
 }

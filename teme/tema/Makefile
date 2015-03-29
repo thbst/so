@@ -12,4 +12,4 @@ clean:
 	rm -f *.o *~ tema
 
 zip:
-	zip CC334_CristianLupu_SO_tema.zip tema.c util.c util.h README Makefile GNUmakefile
+	zip Grupa_PrenumeNume_SO_tema.zip tema.c util.c util.h README Makefile GNUmakefile

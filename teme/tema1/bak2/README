@@ -14,6 +14,9 @@ refolosite.
 Pentru implementarea functiei de hash a fost folosita functia precizata
 in enunt.
 
+Solutia se bazeaza pe structurile node si hash_t, asupra carora se
+exercita diverse operatiuni de modificare conform cerintelor.
+
 Am folosit recomandarile de pe wiki, implementand diferite macro-uri
 (eg. DIE, dprintf), ce au fost reutilizate periodic in functie de
 necesitati.

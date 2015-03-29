@@ -1,4 +1,4 @@
-/* Lupu Cristian CC334 - Tema 1 Multi-platform Development */
+/* Nume Prenume Grupa - Tema 1 Multi-platform Development */
 #ifndef _UTIL_H
 #define _UTIL_H 1
 
@@ -6,11 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hash.h"
-#define DBG 0
-#define BUFSZ 20001
-#define CMDSZ 32
+#define CMDSIZE 32
+#define BUFSIZE 99999
 
-/* useful macro for handling error codes */
+/* macro pentru gestiunea codurilor de eroare */
 #define DIE(assertion, call_description)				\
 	do {								\
 		if (assertion) {					\
@@ -29,83 +28,76 @@
 #endif
 */
 
-enum Bool {
-	FALSE = 0,
-	TRUE = 1
-};
-
-/* Structure for a Node of a list */
+/* structura unui nod dintr-o lista */
 typedef struct Node_ {
 	char *data;
 	struct Node_ *next;
 }Node;
 
-typedef Node* List;
+typedef Node *List;
 
-/* Deallocates resources and destroys the list */
-void destroyList(List *list);
-
-/* Inserts an element to a list. Returns TRUE on success, FALSE otherwise */
-int addElement(List *list, const char *elem);
-
-/* Searches an element in a list. Returns TRUE if found, FALSE otherwise */
-int findElement(const List list, const char *elem);
-
-/* Deletes an element in a list. Returns TRUE if element was found and deleted,
- * FALSE otherwise */
-int deleteElement(List *list, const char *elem);
-
-/* Print List to file. Return TRUE if List is empty, FALSE otherwise. */
-int printList(const List list, FILE *file);
-
-/* Structure that holds a Pair key-value for words with the same hash */
+/* structura ce tine perechea key-valoare pentru un hash */
 typedef struct Bucket_ {
 	List words;
 }Bucket;
 
-/* Structure for a Hash Table */
+/* structura pentru un tabel de dispersie */
 typedef struct HashTable_ {
-	unsigned int hashSize;
-	Bucket *table;
+	int hash_length;
+	Bucket *hash_t;
 }HashTable;
 
-/* Creates a Hash Table with a given hashSize for the hash function */
-void initHashTable(HashTable **table, const unsigned int hashSize);
 
-/* Destroys a Hash Table and releases allocated memory. */
-void destroyHashTable(HashTable **table);
+/* dezalocarea resurselor si stergerea listei */
+void clear_list(List *list);
 
-/* Adds a word to the Hash Table. If it already exists, it does nothing.
- * Returns TRUE if word is added successfully, FALSE otherwise */
-int addWord(HashTable *table, const char *word);
+/* insereaza un element in lista */
+int add_member(List *list, char *member);
 
-/* Removes a word from the Hash Table. The word could be inexistent. Returns
- * TRUE if element is found and deleted, FALSE otherwise */
-int deleteWord(HashTable *table, const char *word);
+/* cauta un element in lista */
+int find_member(List list, char *member);
 
-/* Searches for a word in the Hash Table. Returns TRUE if found, FALSE
- * otherwise */
-int findWord(const HashTable table, const char *word);
+/* sterge un element din lista */
+int remove_member(List *list, char *member);
 
-/* Prints bucket to a FILE. Each word is separated by space. Returns TRUE if
- * Bucket elements exist, FALSE otherwise. */
-int printBucket(
-		const HashTable table,
-		FILE *file,
-		const unsigned int bucketIndex);
+/* printeaza lista intr-un fisier */
+int print_node(FILE *file, List list);
 
-/* Prints HashTable to a FILE. Each bucket is printed on a separate line. */
-void printTable(const HashTable table, FILE *file);
+/* creeaza un tabel de dispersie de o anumita lungime */
+void init_hash(HashTable **hash_t, int hash_length);
 
-/* Doubles the size of the hash function of the Hash Table. Recomputes the
- * entire table by creating a new one. Returns TRUE on success, FALSE otherwise
- * */
-int doubleTable(HashTable **table);
+/* sterge un tabel de dispersie si elibereaza memoria */
+void free_hash(HashTable **hash_t);
 
-/* Halves the size of the hash function of the Hash Table. Recomputes the
- * entire table by creating a new one. Returns TRUE on success, FALSE otherwise
- * */
-int halveTable(HashTable **table);
+/* adauga un cuvant intr-un tabel de dispersie */
+int add_word(HashTable *hash_t, char *word);
+
+/* sterge un cuvant dintr-o tabela de dispersie */
+int remove_word(HashTable *hash_t, char *word);
+
+/* cauta un cuvant intr-o tabela de dispersie */
+int find_word(char *word, HashTable hash_t);
+
+/* printeaza un bucket intr-un fisier, fiecare cuvant separat prin spatiu */
+int print_bucket(FILE *file,HashTable hash_t, int key);
+
+/* printeaza o tabela de dispersie intr-un fisier, fiecare bucket pe o linie*/
+void print_hash(FILE *file, HashTable hash_t);
+
+/* dubleaza marimea unei tabele de dispersie */
+int resize_double(HashTable **hash_t);
+
+/* injumatateste marimea unei tabele de dispersie */
+int resize_half(HashTable **hash_t);
+
+/* afiseaza cuvant in fisier */
+void print_word(FILE *f, int result);
+
+/* ruleaza comenzi */
+void run_operation(HashTable **hashTable, char buf[3][BUFSIZE]);
+
+/* proceseaza fisiere de intrare/iesire */
+void parse_file(FILE *file, HashTable **hashTable);
 
 
 #endif
