@@ -1,0 +1,12 @@
+Tudorica Constantin-Alexandru, 333CA
+	
+	Am implementat tema foloindu-ma de functiile din common.h, vmsim.h, debug.h
+si util.h declarand-umi pe langa acelea cateva mici functii ca sa ajute mai bine 
+la intelegerea codului.
+	Am creat 2 vectori unu de dirty in care practit tineam minte nivelul de
+protectie al paginii si unul in care tin minte in ce stare e pagina. Pentru
+fiecare pagina am 3 stari posibile: 0 - nu a fost accesata nicioadata, 1 - a
+fost accesata cel putin pentru read si a trebuit sa o blank-ui, 2 - am swap-uit
+pagina aceea cel putin o data.
+	Pe langa asta mai tin 2 vectori pentru a face rapid corespondenta intre
+pagini si frame-uri. 

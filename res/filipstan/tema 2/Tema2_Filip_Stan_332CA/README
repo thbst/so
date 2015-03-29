@@ -1,0 +1,12 @@
+Stan Filip Ioan 332 CA 
+
+	Am implementat conform specificatiilor din enunt si din schelet. 
+	
+	Dificultati intampinate: 
+		- "cd" --> a trebuit sa creez fisierele de out si err pentru a trece testul 
+		- "do_in_parallel" --> am creat 1 proces care la randul lui creeaza un alt process identic, acestea 2 ruleaza fiecare in paralel cate o comanda 
+		- "do_on_pipe" --> am creat 1 proces care ruleaza prima comanda (cu redirectarea stdout-ului), iar din procesul parinte mai creez 1 alt process identic care executa comanda a doua (cu redirectarea stdin-ului)
+	
+	Am folosit parserul oferit. 
+	
+	Fisiere modificate: utils.h, utils-lin.c 

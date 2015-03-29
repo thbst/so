@@ -1,0 +1,228 @@
+Tema 2 Mini-shell
+
+Data publicare: 13 Martie 2014
+Deadline: 26 Martie 2014, ora 23:55
+
+Deadline hard: 2 Aprilie 2014, ora 23:55
+
+
+Enun?
+
+Sa se implementeze un shell simplu, care suporta execu?ia de comenzi externe cu argumente multiple, comenzi interne, redirectari, pipe-uri. Shell-ul trebuie sa suporte execu?ia de comenzi compuse, cu oricâ?i operatori.
+
+Shell-ul trebuie sa suporte urmatorii operatori de execu?ie:
+
+operatorul de secven?iere ”;”
+va fi folosit pentru a executa comenzile “pe rând”;
+de exemplu, expr1; expr2 va avea ca efect mai întâi execu?ia comenzilor expr1 ?i, dupa terminarea execu?iei acestora, execu?ia comenzilor expr2;
+operatorul de paralelism ”&”
+va fi folosit pentru a executa comenzile în paralel;
+de exemplu, expr1 & expr2 va avea ca efect execu?ia comenzilor expr1 ?i a comenzilor expr2 în paralel;
+In implementarea NU aveti voie sa va reapelati singuri executabilul.
+execv("./my_homework", "command");
+operatorul ”|” (pipe)
+va fi folosit pentru înlan?uirea comenzilor;
+de exemplu, expr1 | expr2 va avea ca efect execu?ia comezilor expr1 cu stdout-ul redirectat în stdin-ul comenzilor expr2;
+operatorii de execu?ie condi?ionata ”&&” ?i ”||”
+vor fi folosi?i pentru a executa comenzile în func?ie de codul de eroare;
+expr1 && expr2 va avea ca efect execu?ia comenzilor expr2 doar în cazul în care comenzile expr1 au ca rezultat un cod de eroare 0;
+expr1 || expr2 va avea ca efect execu?ia comenzilor expr2 doar în cazul în care comenzile expr1 au ca rezultat un cod de eroare diferit de zero.
+Prioritatea operatorilor de execu?ie este, de la cel mai prioritar la cel mai pu?in prioritar:
+
+operatorul |
+operatorii de execu?ie condi?ionata
+operatorul de paralelism
+operatorul de secven?iere
+Shell-ul trebuie, de asemenea, sa suporte ?i urmatorii operatori de redirectare:
+
+”< nume_fisier” pentru redirectarea intrarii din fi?ierul nume_fisier;
+”> nume_fiser” pentru redirectarea ie?irii standard în fi?ierul nume_fisier;
+”2> nume_fisier” pentru redirectarea ie?irii de eroare standard în fi?ierul nume_fisier;
+”&> nume_fisier” pentru redirectarea ie?irii standard ?i ie?irii de eroare standard în fi?ierul nume_fisier;
+”» nume_fisier” pentru redirectarea ie?irii standard în fi?ierul nume_fisier în modul “append”;
+”2» nume_fisier” pentru redirectarea ie?irii de eroare standard în fi?ierul nume_fisier în modul “append”.
+În fine, shell-ul trebuie sa suporte urmatoarele comenzi interne:
+
+exit ?i quit pentru terminarea shell-ului;
+cd director pentru schimbarea directorului curent.
+Shell-ul trebuie sa suporte variabile de mediu:
+
+formatul de utilizare este $VARIABILA_DE_MEDIU identic pe Linux ?i pe Windows;
+variabilele de mediu sunt mo?tenite de la shell-ul parinte (Bash) sau sunt definite în mini-shell;
+definirea variabilelor se face sub forma NUME_VARIABILA=valoare;
+nu trebuie tratat cazul în care valoare con?ine referiri la alte variabile de mediu.
+Daca variabila de mediu nu exista aceasta are valoarea sirul vid (Atentie sirul vid este diferit de NULL)
+
+Precizari generale
+
+Pentru a simplifica implementarea temei, pute?i folosi parserul implementat de noi. Pentru detalii despre parser, citi?i fi?ierul README din arhiva.
+Promptul afi?at de shell este impus pentru a facilita testarea automata ?i este ”>” (adica se va afi?a caracterul > urmat de un spa?iu).
+Numele executabilului temei trebuie sa fie mini-shell pe Linux, respectiv mini-shell.exe pe Windows.
+Din cauza diferen?ei între Windows ?i Linux la crearea de noi procese (CreateProcess vs. fork + exec) s-ar putea sa nu pute?i folosi acela?i tip de parcurgere a arborelui sintactic ?i pe Windows ?i pe Linux. Daca vre?i sa reutiliza?i concepte/cod de pe Linux pe Windows, concepe?i parcurgerea sa func?ioneze ?i cu func?ia CreateProcess de pe Windows.
+În rezolvarea temei pute?i porni de la exemplul de utilizare a parserului (UseParser.cpp sau CUseParser.c).
+Recomandam rezolvarea ?i testarea din aproape în aproape a temei dupa pa?i:
+rularea de comenzi simple
+rularea de comenzi interne (cd, exit, quit)
+implementarea redirectarilor (operatorii >, <, 2>, &>, », 2»)
+variabile de mediu
+secven?ierea comenzilor (operatorii &&, ||, ;)
+implementarea operatorilor & (paralel) ?i | (pipe)
+Ave?i mai jos câteva exemple de comenzi ?i rezultatul generat de acestea:
+ > ls
+ Makefile	  README.checker  mini-shell	mini-shell.o  parser
+ Makefile.checker  inputs	  mini-shell.c	outputs       tags
+ 
+ > uname -a ; ps 
+ Linux bogdan-desktop 2.6.31-19-generic #56-Ubuntu SMP Thu Jan 28 02:39:34 UTC 2010 x86_64 GNU/Linux
+   PID TTY          TIME CMD
+  6078 pts/0    00:00:00 bash
+  6190 pts/0    00:00:00 mini-shell
+  6200 pts/0    00:00:00 ps
+ 
+ > date && sleep 1 ; echo date
+ Mon Feb  8 13:40:25 EET 2010
+ date
+ 
+ > date && sleep 1; date
+ Mon Feb  8 13:40:49 EET 2010
+ Mon Feb  8 13:40:50 EET 2010
+ 
+ > true && date
+ Mon Feb  8 13:41:16 EET 2010
+ 
+ > false && cat mini-shell.c
+ 
+ > false || date
+ Mon Feb  8 13:42:36 EET 2010
+ 
+ > cat /et/services
+ cat: /et/services: No such file or directory
+ 
+ > cta /etc/services
+ Execution failed for 'cta'
+ 
+ > cat /etc/services | grep telnet
+ telnet		23/tcp
+ rtelnet	107/tcp				# Remote Telnet
+ rtelnet	107/udp
+ telnets	992/tcp				# Telnet over SSL
+ telnets	992/udp
+ tfido		60177/tcp			# fidonet EMSI over telnet
+ 
+ > gcc > tmp; echo sep; cat tmp
+ gcc: no input files
+ sep
+ 
+ > strace -e trace=read ls 2> strace.out   
+ Makefile	  README.checker  mini-shell	mini-shell.o  parser	  tags
+ Makefile.checker  inputs	  mini-shell.c	outputs       strace.out  tmp
+ 
+ > head -1 strace.out
+ read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0@#\0\0\0\0\0\0@"..., 832) = 832
+ 
+ > pwd; cd ~; pwd
+ /home/bogdan/Documents/SO/Solutii
+ /home/bogdan
+ 
+ > LETTER=alfa && echo $LETTER
+ alfa
+ 
+ > echo a > test ; echo b >> test && cat test
+ a
+ b
+ 
+ > exit
+
+Precizari Windows
+
+Tema se va rezolva folosind doar func?ii Win32. Se pot folosi, de asemenea, ?i func?iile de formatare printf, scanf, func?iile de alocare de memorie malloc, free ?i func?iile de lucru cu ?iruri de caractere (strcat, strdup, etc.)
+Pentru partea de I/O ?i procese se vor folosi doar func?ii Win32. De exemplu, func?iile open, read, write, close nu trebuie folosite, în locul acestor trebuind sa folosi?i CreateFile, ReadFile, WriteFile, CloseHandle.
+Pentru a permite transmiterea de caractere speciale în argumente (spre exemplu echo “int main() { return 0; }”) recomandam sa “îngradi?i” argumentele liniei de comanda a CreateProcess cu ghilimele.
+Daca folosi?i Visual Studio dezactiva?i Unicode (clic dreapta pe proiect ? Properties ? Character Set ? Not Set)
+ATEN?IE: Pentru testarea temei cu testele publice se va folosi cygwin, compilarea sursei se face cu compilatorul specific Windows, cl (în Visual Studio console).
+
+Instalare Cygwin
+
+Pute?i descarca Cygwin de aici
+Asigura?i-va ca la instalare a?i selectat pachetele make ?i gcc
+
+Precizari Linux
+
+Tema se va rezolva folosind doar func?ii POSIX. Se pot folosi de asemenea ?i func?iile de formatare printf, scanf, func?iile de alocare de memorie malloc, free ?i func?iile de de lucru cu ?iruri de caractere (strcat, strdup, etc.)
+Pentru partea de I/O ?i procese se vor folosi doar func?ii POSIX. De exemplu, func?iile fopen, fread, fwrite, fclose nu trebuie folosite, în locul acestor trebuind sa folosi?i open, read, write, close.
+
+Testare
+
+Pentru simplificarea procesului de corectare a temelor, dar ?i pentru a reduce gre?elile temelor trimise, corectarea se va realiza automat cu ajutorul unor test publice disponibile in sectiunea de materiale ajutatoare.
+Exista 18 teste. Se pot ob?ine maxim 9 puncte prin trecerea testelor. Se acorda 1 punct din oficiu.
+Pentru a trece testul 18, este obligatoriu sa respecta?i formatul mesajului de eroare impus. Mesajul de eroare trebuie scris la stderr ?i trebuie sa fie identic cu cel a?teptat de teste (vezi test_18_ref.txt din teste).
+O tema care trece cele 18 teste automate va ob?ine 10 puncte din 10 (daca nu tri?eaza folosind API interzis, cum ar fi func?ia system(), caz în care nu va fi punctata).
+Din punctajul temei se vor scadea automat puncte pentru întârzieri ?i pentru warning-uri. La revizia temei, se poate scadea suplimentar pentru nerespectarea criteriilor scrise la sec?iunea reguli. Astfel:
+-0.1 pentru fi?ier Makefile incorect (de exemplu compileaza de fiecare data totul)
+-0.2 pentru fi?ier README necorespunzator
+-0.2 surse necorespunzator comentate
+-0.3 neverificarea condi?iilor de eroare sau/?i neeliberarea de resurse
+-0.2 diverse alte probleme constatate în implementare
+În cazuri excep?ionale se poate scadea mai mult decât este men?ionat mai sus.
+
+
+Nota
+
+La corectarea temei nu se va ?ine cont de warning-urile sau leak-urile cauzate de parser. De exemplu:
+	cl /nologo /W3 /EHsc /Za /c parser.yy.c
+parser.yy.c
+parser.yy.c(1302) : warning C4018: '<' : signed/unsigned mismatch
+
+Materiale ajutatoare
+
+Cursuri utile:
+
+Curs 1
+Curs 2
+Curs 3
+Laboratoare utile:
+
+Laborator 1
+Laborator 2
+Laborator 3
+Arhiva cu parserul pentru comenzi:
+
+Parser
+Schelet de cod:
+
+Schelet cod Linux
+Schelet cod Windows
+Teste:
+
+teste Linux
+teste Windows
+Pagina de Upload:
+
+upload
+
+FAQ
+
+Q: Cum pot sa citesc arhivele listei de discu?ii?
+A: O varianta este cu Opera: File ? Import and export ? Import mail ? Import generic mbox file ? alege?i fi?ierele respective.
+Q: Am voie sa folosesc func?ii POSIX pe Windows?
+A: La toate temele de SO pe Windows se va folosi Win32 API, nu POSIX. Oricum, fork ?i exec nu sunt suportate pe Windows XP decât dupa instalarea “Unix Services for Windows”.
+Q: La temele de Windows trebuie sa folosesc func?iile de API în versiunea Unicode, ANSI, sau generica?
+A: Nu este impus sa folosi?i o versiune anume. Ave?i, totu?i, grija sa folosi?i corect func?iile (acestea primesc parametri de tip CHAR pentru versiunea ANSI, WCHAR pentru Unicode ?i TCHAR în versiunea generica). Pentru detalii consulta?i Unicode in the Windows API.
+Q: Ce fac daca am intâlnit un caz limita al carui comportament nu este precizat în enun??
+A: În general la temele de SO, pentru cazuri limita ce nu apar în testele publice sau în enunt, se accepta orice comportament documentat în README. Un exemplu este comportamentul pentru “command | cd /something”. Daca nu sunte?i siguri, întreba?i pe lista de discu?ii.
+Q: Trebuie optimizat numarul de fork-uri? Spre exemplu, în cazul comenzii a|b|c trebuie sa am 3 forkuri sau pot sa am 4 sau 5?
+A: Nu este obligatoriu sa optimiza?i numarul de fork-uri. Totu?i, în general este bine sa ave?i în vedere eficientizarea consumului de resurse.
+Q: Shell-ul trebuie sa se comporte ca un shell adevarat (sh, bash) în situa?ia … ?
+A: Func?ionalitatea minima necesara este cea din enun?ul temei. Daca implementa?i ceva în plus, preciza?i în README. Exemple de func?ionalitate care nu este ceruta: updatarea unor variabile de mediu (gen $OLDPWD ?i $PWD), history, multe altele … (vezi man bash pentru o idee despre func?ionalitatea unui shell complet :-) )
+Q: Am voie sa nu folosesc parserul din enun? daca doresc sa scriu eu altul echivalent?
+A: Da.
+Q: Avem voie sa folosim:
+const char *argv[] = {"/bin/bash", "-c", command, NULL};
+execv("/bin/bash", (char *const *)argv);
+A: Nu.
+Q: Am voie sa fac execv pe tema mea pentru a executa o parte din arbore independent?
+A: Nu.
+
+Lista de discu?ii
+
+Daca ave?i întrebari sau nelamuriri legate teme, laboratoare sau curs, pute?i cauta, consulta sau trimite un mail pe lista de discu?ii (trebuie sa fi?i înregistra?i).

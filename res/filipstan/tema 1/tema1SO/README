@@ -1,0 +1,10 @@
+Stan Filip Ioan 332 CA 
+
+	Am implementat un hashtable conform specificatiilor din enunt. 
+	
+	In rezolvarea temei am pornit cu crearea unei liste inlantuite si catorva operatii de baza: addLast, removeFirst, etc. 
+
+	Folosindu-ma de lista inlantuita am definit un hashtable ca fiind o structura formata dintr-o lista de liste inlantuite si dimensiunea sa. 
+	Am implementat apoi cateva operatii pentru hashtable cum ar fi put, find, removeWord, clear, etc. pe care le-am folosit pentru a defini operatiile cerute in enunt. 
+	
+	In functie de parametrii primiti de executabil citesc comenzile de la tastatura sau din fisierele de intrare. 

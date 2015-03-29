@@ -1,0 +1,25 @@
+test_exec = _test/run_test.exe
+objects = _test/test1.obj _test/test2.obj _test/test3.obj \
+		  _test/test4.obj _test/test5.obj _test/test6.obj \
+		  _test/test7.obj _test/test8.obj _test/test9.obj \
+                  _test/run_test.obj
+
+all: build-pre run build-post
+
+build-pre:
+	cd _test && nmake all && cd ..
+
+$(test_exec): build-pre libscheduler.dll
+	@$(CC) $(CFLAGS) /Fe$@ $(objects) libscheduler.lib
+
+build-post: $(test_exec)
+
+run: $(test_exec)
+	@bash ./run_all.sh
+
+pack:
+	zip -r run_test_win.zip _test/ NMakefile.checker \
+			GNUmakefile run_all.sh README
+
+clean:
+	@-cd _test && nmake clean && cd ..

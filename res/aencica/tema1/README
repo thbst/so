@@ -1,0 +1,45 @@
+Nume: Encica Alexandru
+Grupa: 332 CC
+
+
+=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=- SO -> Tema #1 -=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-
+
+=-=-=-=-=-=-=--=-=-=-=-=-=-= Multi-platform Development =-=-=-=-=-=-=-=-=-=-=-=-
+
+Continut arhiva:
+
+utils.h, utils.c
+hash.h, hash.c
+hashtable.h, hashtable.c
+main.c
+GNUmakefile
+Makefile
+README
+=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=
+
+Implementare:
+
+Pentru a crea hashtable-ul am folosit o lista inlantuita pentru a defini un bucket
+iar hashtable-ul este o lista de liste inlantuite.
+
+Mai intai aloc memorie pentru hashtable apoi instructiunile se citesc de la stdin 
+sau dintr-un fisier de intrare, linie cu linie si se parseaza.
+- Pentru a adauga un cuvant verific daca mai exista cuvinte in bucket-ul respectiv
+(altfel este NULL), si adauga la sfarsitul listei (bucket-ului) daca acesta nu 
+exista deja.
+- Pentru a sterge un cuvant verific bucket-ul din care face parte si pargurg
+elementele din bucket-ul respectiv. Daca exista ii dau remove.
+- Pentru clear ma folosesc de functia remove si voi parcurge intreg hashtable-ul, 
+si voi da remove primului cuvant din fiecare bucket, pana cand bucket-ul este NULL.
+- Pentru find folosesc aceasi functie folosita pentru add (pentru verficarea unicitatii)
+- In Print parcurg toate bucket-urile si folosesc functia printbucket pentru afisarea 
+unui bucket.
+- Pentru resize_double si resize_halve am creat 2 functii auxiliare:copy_elements, si resize 
+ce primesteca parametru noua dimensiune si hashtable-ul si intoarce un hashtable noua 
+dimensinune. Pentru redistribuirea elementelelor creez un nou hashtable si voi parcurge 
+hashtable-ul initial, adaugand elementele in noul hashtable si stergandu-le din cel vechi.  
+
+=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=
+
+Concluzii:  
+O tema foarte interesanta, destul de usoara, de "antrenament" pentru temele ce vor urma.

@@ -1,0 +1,28 @@
+Mitris Victor
+334 CC
+Homework 2 MINI-SHELL
+
+Implementation unui mini-shell
+
+I used the parser received.
+
+For the implementation of the extern commands I declared ext_comanda functions which has the following paramters:
+	*a vector of char*
+	*a struct simple_comand_t
+This function creates a child, redirects to stdin, stdout and stderr based on in, out and err fields in struct and executes the command returning Exit_Failure if it failes.
+
+The function parse_simple receives as parameters:
+	* a simple_command_t struct
+	* level ( the level in the heap )
+	* the parent of the command
+this function verifies what kind of command is executed : internal (cd, exit, quit ), setting an environment variable, extern commands
+Functia parse_simple primeste ca parametri o structura simple_command_t, level care reprezinta nivelul in arbore si parintele comenzii.
+Aceasta verifica ce fel de comanda se doreste a se executa:
+	-comenzi interne (cd, exit, quit) - se apeleaza shell_cd respectiv shell_exit
+	-setarea unei variabile de sistem - se executa functia var_sys
+	-comenzi externe se executa functia ext_comanda
+
+
+The function do in parallel receives as parameters 2 commands cmd1 and cmd2, the level in heap and the parent of the commands.
+THis function creates a child process that executes command1, the parent executes command2 and then waits for the response of the child.
+

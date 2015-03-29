@@ -1,0 +1,120 @@
+Tema 1 Multi-platform Development
+
+Data publicare: 27 Februarie 2014
+Deadline: 12 Martie 2014, ora 23:55
+
+Deadline hard: 19 Martie 2014, ora 23:55
+
+
+Scopul temei
+
+Recapitularea lucrului cu func?iile ANSI C:
+lucrul cu fi?iere
+alocare dinamica de memorie
+Folosirea pointerilor
+
+Enun?
+
+Sa se implementeze în C o tabela de dispersie (hashtable) ce va con?ine cuvinte. Opera?iile ce trebuie implementate pentru tabela sunt urmatoarele:
+
+add <cuvânt> adauga cuvântul la hashtable (nu se permit dubluri)
+remove <cuvânt> ?terge cuvântul din hashtable (nu e obligatoriu sa existe cuvântul)
+clear gole?te tabela
+find <cuvânt> [<fi?ier_ie?ire>] cauta cuvântul în hashtable ? scrie True sau False pe o linie noua în fi?ierul specificat sau la consola daca acest parametru lipse?te
+print_bucket <index_bucket> [<fi?ier_ie?ire>] scrie cuvintele din bucketul respectiv, pe o singura linie ?i separate de spa?iu în fi?ierul specificat sau la consola daca acest parametru lipse?te, index_bucket este valid
+print [<fi?ier_ie?ire>] printeaza toate bucket-urile pe linii diferite, începând cu bucketul 0, în fi?ierul specificat sau la consola daca acest parametru lipse?te
+resize double dubleaza dimensiunea hash-ului (bucket-urile vor fi parcuse în ordine ?i cuvintele sunt redistribuite)
+resize halve înjumata?e?te dimensiunea hash-ului (bucket-urile vor fi parcuse în ordine ?i cuvintele sunt redistribuite, memoria în surplus va fi dealocata)
+Aceste comenzi se vor regasi una per linie.
+
+Programul va primi o serie de parametri:
+
+Primul parametru este lungimea ini?iala a hashului
+Urmatorii parametri sunt op?ionali ?i reprezinta o lista de fi?iere de intrare din care se face citirea. Daca ace?tia lipsesc citirea se face de la STDIN. Aten?ie, în cazul în care sunt specificate mai multe fi?iere de intrare, toate opera?iile se aplica aceluia?i hash.
+Exemplu:
+
+ ./tema1 256 hash1.in hash2.in
+ ./tema1 100 < hash1.in
+ 
+hash1.in:
+add tema
+add hash
+print hash.out
+find tema hash.out
+remove tema
+find tema hash.out
+print hash.out
+resize double
+print
+print_bucket 185 hash2.out
+Hashtable-ul implementat va con?ine SIZE bucketuri. Fiecare bucket va con?ine cuvintele în ordinea în care ele au fost introduse. Pentru opera?ia de resize bucketurile vor fi parcurse în ordine ?i redistribuite. Cuvintele din bucket vor fi parcurse începând cu cel mai vechi ?i terminand cu cel mai recent.
+
+
+Precizari generale
+
+Valorile introduse în hashtable sunt cuvinte [A-Za-z].
+Un tablou nu poate con?ine duplicate.
+Nu exista limitari pentru lungimea unui bucket.
+Inserarea într-un tablou (bucket) se face la finalul acestuia.
+Func?ia de hash ce trebuie folosita (în întreaga tema) este definita in hash.c. Nu poate fi folosita alta func?ie.
+Programul trebuie sa execute comenzile în ordine, a?a cum au fost primite citite din fi?ier(e).
+Liniile goale din fi?ierul de intrare trebuie ignorate (programul nu face nimic ?i trece la linia urmatoare)
+În fi?iere se va scrie în modul append.
+Daca dimensiunea hash-ului este impara (2k+1), dupa înjumata?ire dimensiunea lui va fi k.
+Lungimea hash-ului ?i a unui cuvânt vor fi reprezentate pe un numar pe 32 de bi?i (fara semn) .
+?irul vid nu este valid.
+Dimensiunea hash-ului va fi întotdeauna pozitiva.
+Executabilul generat va purta numele tema1 pe Linux ?i tema1.exe pe Windows.
+Dimensiunea maxima a unei comenzi (opera?ia ?i cuvântul asociat) este de 20000 de caractere.
+Bufferul folosit pentru citirea comenzilor poate fi declarat cu dimensiune statica.
+Comportamentul dorit la resize este unul echivalent cu urmatorul: se creeaza un nou hash, se itereaza prin bucketurile din vechiul hash si se adauga in noul hash.
+
+Precizari VMChecker
+
+Arhiva temei va fi încarcata de doua ori pe vmchecker (Linux ?i Windows). Arhiva trimisa trebuie sa fie aceea?i pe ambele platforme (se vor compara cele doua trimise). Arhivele trebuie sa con?ina sursele temei, README ?i doua fi?iere Makefile care con?in target-urile build ?i clean:
+
+Fi?ierul Makefile de Linux se va numi GNUmakefile.
+ATEN?IE: GNUmakefile (cu m mic).
+Fi?ierul Makefile de Windows se va numi Makefile.
+Executabilul rezultat din opera?ia de compilare ?i linking se va numi tema1.
+
+
+Punctare
+
+Tema va fi punctata cu minimul punctajelor ob?inute pe cele doua platforme. Nu ave?i voie sa folosi?i directive de preprocesare de forma:
+#ifdef __linux__
+[...]
+#ifdef _WIN32
+[...]
+Nota mai poate fi modificata prin depunctari suplimentare:
+
+Lista generala de depunctari
+-0.1 diverse alte probleme constatate în implementare
+-4 alocare statica hash
+
+Materiale ajutatoare
+
+Arhiva cu func?ia de hash.
+Teste:
+Linux
+Windows
+Referin?e:
+ANSI C reference
+Hash table
+Ma?ini virtuale:
+Link (Important: folosi?i 7zip pentru dezarhivarea ma?inilor, este posibil sa apara probleme cu alte programe de dezarhivare)
+
+FAQ
+
+Q: Tema 1 se poate face în C++?
+A: Nu.
+Q: “Valorile introduse în hastable sunt cuvinte [A-Za-z]” - trebuie verificate cuvintele la introducere?
+A: Nu.
+Q: Se pot folosi directive de preprocesare de tipul #define?
+A: Da.
+Q: Pentru citire/scriere din fi?ier/consola putem folosi freopen?
+A: Da, e ok. Pute?i folosi orice func?ie din categoria fopen, fread, fwrite, fclose.
+
+Lista de discu?ii
+
+Pentru întrebari sau nelamuriri legate de tema pute?i cauta, consulta sau trimite un mail pe lista de discu?ii (trebuie sa fi?i înregistra?i).

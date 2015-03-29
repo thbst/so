@@ -1,0 +1,79 @@
+Tema 1 SO - Mini-shell
+Geanta Marius
+331CC
+******************************************************************************
+
+1. Descriere generala
+=====================
+
+Am implementat rezolvarea temei pe baza scheletului de cod si a parserului
+oferit.
+
+Rezolvarea a decurs destul de lejer, fara probleme prea mari.
+Am urmat o rezolvare din aproape in aproape pe urmatorii pasi:
+
+Comenzi simple(parse_simple):
+	- tratez cele 2 cazuri de comenzi interne(exit si cd), verificarea
+	  am facut-o cu ajutorul functiilor is_exit_command respectiv
+	  is_cd_command. exit e usor, la cd salvez file descriptorii standard
+	  cu save_fd(int *, int *, int *), fac eventualele redirectari, execut
+	  cd si apoi restore_fd(int, int, int).
+
+	- verific daca este atribuire de variabila de mediu cu
+	  is_variable_assignment si execut eventual aceasta atribuire cu
+	  ajutorul setenv.
+
+	- daca nu e nici comand interna nici atribuire de var de mediu =>
+	
+	fork + execvp + waitpid
+	
+	daca execvp intoarce < 0 afisez mesajul de eroare specificat in test_18.ref
+
+Redirectari(shell_redirect):
+	- testez initial s->in daca != NULL => fac redirectare STDIN in fisierul cu
+	                              numele get_word(s->in) deschis pentru citire
+	- testez s->out daca != NULL => fac redirectare STDOUT in get_word(s->out)
+	                daca si s->err != NULL si numele fisierelor sunt egale
+	              => este redirectare &> deci redirectez si STDERR in acelasi
+	                 fisier
+	- testez s->err != NULL si nu este redirectare &> => redirectez STDERR in
+	                                                     get_word(s->err)
+
+Secventiere comenzi(&&, ||, ;)
+	- parse_command + parse_command
+
+Paralelism(& - do_in_parallel)
+	- Procesul parinte face 2 * (fork() + parse_command) cu asteptarea copiilor
+	  la sfarsit
+
+Pipe(do_on_pipe)
+	- creez un pipe anonim cu pipe(pipe_fd)
+	- fork() => primul copil(cel care scrie in pipe)
+				- inchid in acest copil capatul de citire al pipe-ului
+				- redirectez STDOUT al acestui copil
+				- parse_command(cmd1)
+				- inchid capatul de scriere al pipe-ului
+				- exit cu valoarea intoarsa de parse_command
+	- fork() => al doilea copil(cel care citeste din pipe)
+				- inchid capatul de scriere al pipe-ului in acest copil
+				- redirectez STDIN al acestui copil
+				- parse_command(cmd2)
+				- inchid capatul de citire
+				- exit cu valoarea intoarsa de parse_command
+	- in parinte dupa crearea proceselor copil inchid capatul de scriere al 
+	  pipe-ului apoi astept copiii sa se termine cu waitpid
+
+2. Mediu de lucru:
+=================
+vim - ubuntu 12.10 32-bit
+
+3. Continut arhiva
+==================
+
+Arhiva contine urmatoarele fisiere:
+* main.c
+* utils-lin.c - aici e implementarea mea
+* utils.h - macro-ul DIE
+* parser.* - sursele parser-ului
+* Makefile
+* README

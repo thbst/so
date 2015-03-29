@@ -1,0 +1,58 @@
+Nume: Encica Alexandru
+Grupa: 332 CC
+
+
+=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=- SO -> Tema #1 -=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-
+
+=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-= Mini-shell =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+Continut arhiva:
+	GNUmakefile -> makefile
+	README -> readme-ul
+	parser* -> fisierele parser-ului
+	main.c -> fisierul main
+	utils.h -> header-ul utils
+	utils-lin.c -> implementarea temei
+
+=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=
+
+Implementare:
+ -> pentru comanda cd se apeleaza functia chdir(dir). Inaintea de aceasta se verifica daca exista redirectari. Daca exista se realizeaza 
+ redirectarile necesare, iar dupa apelul functiei se revine la filedescriptorii
+ initiali.
+
+ -> pentru comanda exit/quit se intoarce SHELL_EXIT(-100).
+ -> setarea variabilelor de mediu se face cu set_env.
+
+Pentru comenzile simple, procesul parinte deschide un procesc copil care va
+executa comanda dorita, parintele asteptand procesul copil sa termine. 
+Procesul copil realizeaza redirectarile neceseare (daca este nevoie).
+
+Pentru comenzile mai complexe se apeleaza recursiv functia parse_command;
+	-> Pentru operatorul de sceventiere se executa cmd1 si cmd2 si se va intoarce 
+	codul returnat de aplelul lui cmd2.
+	-> Pentru operatorul de paralelilsm , parintele va crea 2 procese copil, unul va executa cmd1 iar celalat cmd2. 
+	Se va intoarce 0 daca ambele procese au terminat cu succes, -1 altfel.
+	-> pentru operatorul pipe creez un pipe anonim, redirectez 
+	outputul lui cmd1 catre inputul lui cmd2 astfel. Inchid stdout 
+	lui cmd1 si ii atribui inputului lui cmd2 noua valoare (prin dup2).
+
+	-> Pentru operatorul NZERO:
+		verific daca prima comanda s-a executat cu succes, daca nu 
+	rulez si a 2-a comanda.
+
+	-> Pentru operatorul NZERO:
+		verific daca prima comanda s-a executat cu succes, daca da 
+	rulez si a 2-a comanda.
+	
+=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=
+
+Concluzii:  
+
+
+O tema foarte frumoasa, pentru ca a fost foarte bun scheletul de cod, dar astfel
+a ramas mai putin de implementat. Totusi nu a fost nevoie sa ne chinuim sa
+realizam un parser capabil sa faca atatea. 
+
+Timp de lucru: 5-6 h
+Complexitate: easy-medium 

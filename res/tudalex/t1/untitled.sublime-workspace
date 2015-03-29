@@ -1,0 +1,477 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"simple",
+				"parse_simple"
+			],
+			[
+				"parse",
+				"parse_factura_ag"
+			],
+			[
+				"deta",
+				"detalii_factura"
+			],
+			[
+				"par",
+				"parse_factura_ag"
+			],
+			[
+				"url",
+				"url"
+			],
+			[
+				"MPI_C",
+				"MPI_COMM_WORLD"
+			],
+			[
+				"date",
+				"date"
+			],
+			[
+				"fact",
+				"facturi"
+			],
+			[
+				"check",
+				"check_cursor"
+			],
+			[
+				"NR_",
+				"NR_FACT"
+			],
+			[
+				"im_",
+				"im_antet_xml"
+			],
+			[
+				"pret",
+				"pret_unitar"
+			],
+			[
+				"pre",
+				"pret_unitar"
+			],
+			[
+				"cur",
+				"cursor"
+			],
+			[
+				"id",
+				"id_factura"
+			],
+			[
+				"VAL",
+				"VALUES"
+			],
+			[
+				"im",
+				"im_antet_xml"
+			],
+			[
+				"data",
+				"data_factura"
+			],
+			[
+				"fac",
+				"factura_curenta"
+			],
+			[
+				"d",
+				"d"
+			],
+			[
+				"c",
+				"c"
+			],
+			[
+				"factura_",
+				"factura_curenta"
+			],
+			[
+				"data_",
+				"data_scadenta"
+			],
+			[
+				"cod",
+				"cod_contract"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "/**\n * Operating Sytems 2013 - Assignment 1\n *\n */\n\n#include <assert.h>\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <sys/wait.h>\n\n#include <fcntl.h>\n#include <unistd.h>\n\n#include \"utils.h\"\n\n#define READ		0\n#define WRITE		1\n\n/**\n * Internal change-directory command.\n */\nstatic bool shell_cd(word_t *dir)\n{\n	/* TODO execute cd */\n\n	return 0;\n}\n\n/**\n * Internal exit/quit command.\n */\nstatic int shell_exit()\n{\n	/* TODO execute exit/quit */\n	exit(0);\n	return 0; /* TODO replace with actual exit code */\n}\n\n/**\n * Concatenate parts of the word to obtain the command\n */\nstatic char *get_word(word_t *s)\n{\n	int string_length = 0;\n	int substring_length = 0;\n\n	char *string = NULL;\n	char *substring = NULL;\n\n	while (s != NULL) {\n		substring = strdup(s->string);\n\n		if (substring == NULL) {\n			return NULL;\n		}\n\n		if (s->expand == true) {\n			char *aux = substring;\n			substring = getenv(substring);\n\n			/* prevents strlen from failing */\n			if (substring == NULL) {\n				substring = calloc(1, sizeof(char));\n				if (substring == NULL) {\n					free(aux);\n					return NULL;\n				}\n			}\n\n			free(aux);\n		}\n\n		substring_length = strlen(substring);\n\n		string = realloc(string, string_length + substring_length + 1);\n		if (string == NULL) {\n			if (substring != NULL)\n				free(substring);\n			return NULL;\n		}\n\n		memset(string + string_length, 0, substring_length + 1);\n\n		strcat(string, substring);\n		string_length += substring_length;\n\n		if (s->expand == false) {\n			free(substring);\n		}\n\n		s = s->next_part;\n	}\n\n	return string;\n}\n\n/**\n * Concatenate command arguments in a NULL terminated list in order to pass\n * them directly to execv.\n */\nstatic char **get_argv(simple_command_t *command, int *size)\n{\n	char **argv;\n	word_t *param;\n\n	int argc = 0;\n	argv = calloc(argc + 1, sizeof(char *));\n	assert(argv != NULL);\n\n	argv[argc] = get_word(command->verb);\n	assert(argv[argc] != NULL);\n\n	argc++;\n\n	param = command->params;\n	while (param != NULL) {\n		argv = realloc(argv, (argc + 1) * sizeof(char *));\n		assert(argv != NULL);\n\n		argv[argc] = get_word(param);\n		assert(argv[argc] != NULL);\n\n		param = param->next_word;\n		argc++;\n	}\n\n	argv = realloc(argv, (argc + 1) * sizeof(char *));\n	assert(argv != NULL);\n\n	argv[argc] = NULL;\n	*size = argc;\n\n	return argv;\n}\n\n/**\n * Parse a simple command (internal, environment variable assignment,\n * external command).\n */\nstatic int parse_simple(simple_command_t *s, int level, command_t *father)\n{\n	/* TODO sanity checks */\n\n	/* TODO if builtin command, execute the command */\n	if (strcmp(s->verb->string, \"exit\") == 0)\n		shell_exit();\n	/* TODO if variable assignment, execute the assignment and return\n         * the exit status */\n\n	/* TODO if external command:\n         *   1. fork new process\n	 *     2c. perform redirections in child\n         *     3c. load executable in child\n         *   2. wait for child\n         *   3. return exit status\n	 */\n\n	return 0; /* TODO replace with actual exit status */\n}\n\n/**\n * Process two commands in parallel, by creating two children.\n */\nstatic bool do_in_parallel(command_t *cmd1, command_t *cmd2, int level, command_t *father)\n{\n	/* TODO execute cmd1 and cmd2 simultaneously */\n\n	return true; /* TODO replace with actual exit status */\n}\n\n/**\n * Run commands by creating an anonymous pipe (cmd1 | cmd2)\n */\nstatic bool do_on_pipe(command_t *cmd1, command_t *cmd2, int level, command_t *father)\n{\n	/* TODO redirect the output of cmd1 to the input of cmd2 */\n\n	return true; /* TODO replace with actual exit status */\n}\n\n/**\n * Parse and execute a command.\n */\nint parse_command(command_t *c, int level, command_t *father)\n{\n	/* TODO sanity checks */\n\n	if (c->op == OP_NONE) {\n		/* TODO execute a simple command */\n		parse_simple(c->)\n		return 0; /* TODO replace with actual exit code of command */\n	}\n\n	switch (c->op) {\n	case OP_SEQUENTIAL:\n		/* TODO execute the commands one after the other */\n		break;\n\n	case OP_PARALLEL:\n		/* TODO execute the commands simultaneously */\n		break;\n\n	case OP_CONDITIONAL_NZERO:\n		/* TODO execute the second command only if the first one\n                 * returns non zero */\n		break;\n\n	case OP_CONDITIONAL_ZERO:\n		/* TODO execute the second command only if the first one\n                 * returns zero */\n		break;\n\n	case OP_PIPE:\n		/* TODO redirect the output of the first command to the\n		 * input of the second */\n		break;\n\n	default:\n		assert(false);\n	}\n\n	return 0; /* TODO replace with actual exit code of command */\n}\n\n/**\n * Readline from mini-shell.\n */\nchar *read_line()\n{\n	char *instr;\n	char *chunk;\n	char *ret;\n\n	int instr_length;\n	int chunk_length;\n\n	int endline = 0;\n\n	instr = NULL;\n	instr_length = 0;\n\n	chunk = calloc(CHUNK_SIZE, sizeof(char));\n	if (chunk == NULL) {\n		fprintf(stderr, ERR_ALLOCATION);\n		return instr;\n	}\n\n	while (!endline) {\n		ret = fgets(chunk, CHUNK_SIZE, stdin);\n		if (ret == NULL) {\n			break;\n		}\n\n		chunk_length = strlen(chunk);\n		if (chunk[chunk_length - 1] == '\\n') {\n			chunk[chunk_length - 1] = 0;\n			endline = 1;\n		}\n\n		ret = instr;\n		instr = realloc(instr, instr_length + CHUNK_SIZE + 1);\n		if (instr == NULL) {\n			free(ret);\n			return instr;\n		}\n		memset(instr + instr_length, 0, CHUNK_SIZE);\n		strcat(instr, chunk);\n		instr_length += chunk_length;\n	}\n\n	free(chunk);\n\n	return instr;\n}\n\n",
+			"file": "utils-lin.c",
+			"file_size": 5282,
+			"file_write_time": 1364108386000000,
+			"settings":
+			{
+				"buffer_size": 5301,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 13 files for \"simple_command_t\"\n\n/home/tudalex/Dropbox/SO/t1/parser.h:\n  100   (those entered as \"command &> out\").\n  101   \n  102:  up points to the command_t structure that points to this simple_command_t\n  103   (up != NULL)\n  104  */\n  ...\n  117  	struct command_t * up;\n  118  	void * aux;\n  119: } simple_command_t;\n  120  \n  121  \n  ...\n  155      cmd1 op cmd2 must be executed, according to the rules for op\n  156   \n  157:  You can use aux the same way as for simple_command_t\n  158   \n  159   up points to the command_t that points to this structure\n  ...\n  174  	struct command_t * cmd2;\n  175  	operator_t op;\n  176: 	simple_command_t * scmd;\n  177  	void * aux;\n  178  } command_t;\n\n/home/tudalex/Dropbox/SO/t1/parser.tab.c:\n  204  \n  205  \n  206: static simple_command_t * bind_parts(word_t * exe_name, word_t * params, redirect_t red)\n  207  {\n  208: 	simple_command_t * s = (simple_command_t *) malloc(sizeof(simple_command_t));\n  209  	pointerToMallocMemory(s);\n  210  \n  ...\n  224  \n  225  \n  226: static command_t * new_command(simple_command_t * scmd)\n  227  {\n  228  	command_t * c = (command_t *) malloc(sizeof(command_t));\n  ...\n  358  	const char * string_un;\n  359  	redirect_t redirect_un;\n  360: 	simple_command_t * simple_command_un;\n  361  	word_t * exe_un;\n  362  	word_t * params_un;\n\n/home/tudalex/Dropbox/SO/t1/parser.tab.h:\n   94  	const char * string_un;\n   95  	redirect_t redirect_un;\n   96: 	simple_command_t * simple_command_un;\n   97  	word_t * exe_un;\n   98  	word_t * params_un;\n\n/home/tudalex/Dropbox/SO/t1/parser.y:\n   90  \n   91  \n   92: static simple_command_t * bind_parts(word_t * exe_name, word_t * params, redirect_t red)\n   93  {\n   94: 	simple_command_t * s = (simple_command_t *) malloc(sizeof(simple_command_t));\n   95  	pointerToMallocMemory(s);\n   96  \n   ..\n  110  \n  111  \n  112: static command_t * new_command(simple_command_t * scmd)\n  113  {\n  114  	command_t * c = (command_t *) malloc(sizeof(command_t));\n  ...\n  223  	const char * string_un;\n  224  	redirect_t redirect_un;\n  225: 	simple_command_t * simple_command_un;\n  226  	word_t * exe_un;\n  227  	word_t * params_un;\n\n/home/tudalex/Dropbox/SO/t1/untitled.sublime-workspace:\n  101  	[\n  102  		{\n  103: 			\"contents\": \"/**\\n * Operating Sytems 2013 - Assignment 1\\n *\\n */\\n\\n#include <assert.h>\\n\\n#include <stdio.h>\\n#include <stdlib.h>\\n#include <string.h>\\n\\n#include <sys/types.h>\\n#include <sys/stat.h>\\n#include <sys/wait.h>\\n\\n#include <fcntl.h>\\n#include <unistd.h>\\n\\n#include \\\"utils.h\\\"\\n\\n#define READ		0\\n#define WRITE		1\\n\\n/**\\n * Internal change-directory command.\\n */\\nstatic bool shell_cd(word_t *dir)\\n{\\n	/* TODO execute cd */\\n\\n	return 0;\\n}\\n\\n/**\\n * Internal exit/quit command.\\n */\\nstatic int shell_exit()\\n{\\n	/* TODO execute exit/quit */\\n	exit(0);\\n	return 0; /* TODO replace with actual exit code */\\n}\\n\\n/**\\n * Concatenate parts of the word to obtain the command\\n */\\nstatic char *get_word(word_t *s)\\n{\\n	int string_length = 0;\\n	int substring_length = 0;\\n\\n	char *string = NULL;\\n	char *substring = NULL;\\n\\n	while (s != NULL) {\\n		substring = strdup(s->string);\\n\\n		if (substring == NULL) {\\n			return NULL;\\n		}\\n\\n		if (s->expand == true) {\\n			char *aux = substring;\\n			substring = getenv(substring);\\n\\n			/* prevents strlen from failing */\\n			if (substring == NULL) {\\n				substring = calloc(1, sizeof(char));\\n				if (substring == NULL) {\\n					free(aux);\\n					return NULL;\\n				}\\n			}\\n\\n			free(aux);\\n		}\\n\\n		substring_length = strlen(substring);\\n\\n		string = realloc(string, string_length + substring_length + 1);\\n		if (string == NULL) {\\n			if (substring != NULL)\\n				free(substring);\\n			return NULL;\\n		}\\n\\n		memset(string + string_length, 0, substring_length + 1);\\n\\n		strcat(string, substring);\\n		string_length += substring_length;\\n\\n		if (s->expand == false) {\\n			free(substring);\\n		}\\n\\n		s = s->next_part;\\n	}\\n\\n	return string;\\n}\\n\\n/**\\n * Concatenate command arguments in a NULL terminated list in order to pass\\n * them directly to execv.\\n */\\nstatic char **get_argv(simple_command_t *command, int *size)\\n{\\n	char **argv;\\n	word_t *param;\\n\\n	int argc = 0;\\n	argv = calloc(argc + 1, sizeof(char *));\\n	assert(argv != NULL);\\n\\n	argv[argc] = get_word(command->verb);\\n	assert(argv[argc] != NULL);\\n\\n	argc++;\\n\\n	param = command->params;\\n	while (param != NULL) {\\n		argv = realloc(argv, (argc + 1) * sizeof(char *));\\n		assert(argv != NULL);\\n\\n		argv[argc] = get_word(param);\\n		assert(argv[argc] != NULL);\\n\\n		param = param->next_word;\\n		argc++;\\n	}\\n\\n	argv = realloc(argv, (argc + 1) * sizeof(char *));\\n	assert(argv != NULL);\\n\\n	argv[argc] = NULL;\\n	*size = argc;\\n\\n	return argv;\\n}\\n\\n/**\\n * Parse a simple command (internal, environment variable assignment,\\n * external command).\\n */\\nstatic int parse_simple(simple_command_t *s, int level, command_t *father)\\n{\\n	/* TODO sanity checks */\\n\\n	/* TODO if builtin command, execute the command */\\n	if (strcmp(s->, \\\"exit\\\") == 0)\\n		shell_exit();\\n	/* TODO if variable assignment, execute the assignment and return\\n         * the exit status */\\n\\n	/* TODO if external command:\\n         *   1. fork new process\\n	 *     2c. perform redirections in child\\n         *     3c. load executable in child\\n         *   2. wait for child\\n         *   3. return exit status\\n	 */\\n\\n	return 0; /* TODO replace with actual exit status */\\n}\\n\\n/**\\n * Process two commands in parallel, by creating two children.\\n */\\nstatic bool do_in_parallel(command_t *cmd1, command_t *cmd2, int level, command_t *father)\\n{\\n	/* TODO execute cmd1 and cmd2 simultaneously */\\n\\n	return true; /* TODO replace with actual exit status */\\n}\\n\\n/**\\n * Run commands by creating an anonymous pipe (cmd1 | cmd2)\\n */\\nstatic bool do_on_pipe(command_t *cmd1, command_t *cmd2, int level, command_t *father)\\n{\\n	/* TODO redirect the output of cmd1 to the input of cmd2 */\\n\\n	return true; /* TODO replace with actual exit status */\\n}\\n\\n/**\\n * Parse and execute a command.\\n */\\nint parse_command(command_t *c, int level, command_t *father)\\n{\\n	/* TODO sanity checks */\\n\\n	if (c->op == OP_NONE) {\\n		/* TODO execute a simple command */\\n\\n		return 0; /* TODO replace with actual exit code of command */\\n	}\\n\\n	switch (c->op) {\\n	case OP_SEQUENTIAL:\\n		/* TODO execute the commands one after the other */\\n		break;\\n\\n	case OP_PARALLEL:\\n		/* TODO execute the commands simultaneously */\\n		break;\\n\\n	case OP_CONDITIONAL_NZERO:\\n		/* TODO execute the second command only if the first one\\n                 * returns non zero */\\n		break;\\n\\n	case OP_CONDITIONAL_ZERO:\\n		/* TODO execute the second command only if the first one\\n                 * returns zero */\\n		break;\\n\\n	case OP_PIPE:\\n		/* TODO redirect the output of the first command to the\\n		 * input of the second */\\n		break;\\n\\n	default:\\n		assert(false);\\n	}\\n\\n	return 0; /* TODO replace with actual exit code of command */\\n}\\n\\n/**\\n * Readline from mini-shell.\\n */\\nchar *read_line()\\n{\\n	char *instr;\\n	char *chunk;\\n	char *ret;\\n\\n	int instr_length;\\n	int chunk_length;\\n\\n	int endline = 0;\\n\\n	instr = NULL;\\n	instr_length = 0;\\n\\n	chunk = calloc(CHUNK_SIZE, sizeof(char));\\n	if (chunk == NULL) {\\n		fprintf(stderr, ERR_ALLOCATION);\\n		return instr;\\n	}\\n\\n	while (!endline) {\\n		ret = fgets(chunk, CHUNK_SIZE, stdin);\\n		if (ret == NULL) {\\n			break;\\n		}\\n\\n		chunk_length = strlen(chunk);\\n		if (chunk[chunk_length - 1] == '\\\\n') {\\n			chunk[chunk_length - 1] = 0;\\n			endline = 1;\\n		}\\n\\n		ret = instr;\\n		instr = realloc(instr, instr_length + CHUNK_SIZE + 1);\\n		if (instr == NULL) {\\n			free(ret);\\n			return instr;\\n		}\\n		memset(instr + instr_length, 0, CHUNK_SIZE);\\n		strcat(instr, chunk);\\n		instr_length += chunk_length;\\n	}\\n\\n	free(chunk);\\n\\n	return instr;\\n}\\n\\n\",\n  104  			\"file\": \"utils-lin.c\",\n  105  			\"file_size\": 5268,\n\n/home/tudalex/Dropbox/SO/t1/utils-lin.c:\n  104   * them directly to execv.\n  105   */\n  106: static char **get_argv(simple_command_t *command, int *size)\n  107  {\n  108  	char **argv;\n  ...\n  143   * external command).\n  144   */\n  145: static int parse_simple(simple_command_t *s, int level, command_t *father)\n  146  {\n  147  	/* TODO sanity checks */\n\n21 matches across 6 files\n",
+			"settings":
+			{
+				"buffer_size": 8250,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "parser.h",
+			"settings":
+			{
+				"buffer_size": 5976,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/User/untitled.sublime-build",
+	"command_palette":
+	{
+		"height": 54.0,
+		"selected_items":
+		[
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"run",
+				"Build: Run"
+			],
+			[
+				"B",
+				"Build: Run"
+			],
+			[
+				"bu",
+				"Build: Build"
+			],
+			[
+				"bul",
+				"Build: Build"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/tudalex/Dropbox/APD/t3/julia.cc",
+		"/home/tudalex/Dropbox/enel.py",
+		"/home/tudalex/Downloads/enel.py",
+		"/home/tudalex/Dropbox/APD/l2/l2.cpp",
+		"/home/tudalex/eclipse/eclipse.ini"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"simple_command_t",
+			"factura_curenta",
+			"total_factura",
+			"total",
+			"cuv",
+			"!args",
+			"cursor",
+			"count",
+			"context_id"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "utils-lin.c",
+					"settings":
+					{
+						"buffer_size": 5301,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3771,
+								3771
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2652.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"settings":
+					{
+						"buffer_size": 8250,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										200,
+										216
+									],
+									[
+										314,
+										330
+									],
+									[
+										479,
+										495
+									],
+									[
+										640,
+										656
+									],
+									[
+										778,
+										794
+									],
+									[
+										877,
+										893
+									],
+									[
+										901,
+										917
+									],
+									[
+										935,
+										951
+									],
+									[
+										1057,
+										1073
+									],
+									[
+										1234,
+										1250
+									],
+									[
+										1440,
+										1456
+									],
+									[
+										1600,
+										1616
+									],
+									[
+										1699,
+										1715
+									],
+									[
+										1723,
+										1739
+									],
+									[
+										1757,
+										1773
+									],
+									[
+										1879,
+										1895
+									],
+									[
+										2056,
+										2072
+									],
+									[
+										4076,
+										4092
+									],
+									[
+										4833,
+										4849
+									],
+									[
+										7985,
+										8001
+									],
+									[
+										8130,
+										8146
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								331,
+								331
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "parser.h",
+					"settings":
+					{
+						"buffer_size": 5976,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4286,
+								4286
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2346.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 194.0
+	},
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}
