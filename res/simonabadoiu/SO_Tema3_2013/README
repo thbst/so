@@ -1,0 +1,100 @@
+Badoiu Simona Andreea 331CB
+
+Tema 3 SO - Memorie Virtuala
+
+Pentru implementarea acestei teme am pornit de la structurile din enunt si de la
+functiile implementate in common_lin.c, adica functiile din common.h.
+
+Din common.h am folosit urmatoarele functii:
+	- w_write_file
+	- w_set_file_pointer
+	- w_get_previoous_exception_handler
+	- w_set_exception_handler
+	
+Am implementat functiile in fisierul vmsim.cpp, iar pe langa functiile de alocare, eliberare, init si cleanup, am mai adaugat cateva functii care:
+	- sa mapeze o pagina in ram cu drepturi de citire;
+	- sa mapeze o pagina cu drepturi de scriere;
+	- sa mute o pagina din ram in swap;
+	- sa aduca o pagina din swap in ram;
+	- sa determine ce pagina trebuie trimisa in swap;
+
+Am folosit mai multe variabile statice pe care le folosesc deoarece se poate apela de mai multe ori vm_alloc si am nevoie de date pentru fiecare data cand s-a apelat.
+
+Am folosit tipul de date vector din c++:
+	- Am retinut un vector de vectori de pagini
+		In acest vector, pe pozitia i se gaseste vectorul cu paginile virtuale pentru a i-a oara cand s-a apelat vm_alloc;
+
+	- un vector de file descriptori pentru memoria ram
+		pe pozitia i se gaseste fd-ul corespunzator memoriei ram create a i-a oara cu vm_alloc;
+		- analog acestui vector mai exista si:
+			- vectori in care retin numele fisierelor ram si swap;
+			- fd pentru fisierele pentru swap;
+			- nr_frames - numarul maxim de frames suportate de memoria ram;
+			- offsetul din fisierul corespunzator memoriei ram;
+			- offsetul din fisierul corespunzator memoriei swap;
+			- ram_full - un element de pe pozitia i este 1 daca memoria ram corespunzatoare acestei pozitii s-a umplut.
+			
+Implementarea functiilor:
+	
+	==== vmsim_init ====
+		am setat exception hadler-ul creat de mine cu ajutorul functiei w_set_exception_handler;
+	
+	==== vm_alloc ====
+		adauga in vectorii de mai sus, date initiale pentru a implementa mecanismul de memorie virtuala.
+		se adauga num_frames, numele fisierelor pentru ram si swap;
+		se deschid fisierele de ram si swap, se trunchiaza la dimensiunea corespunzatoare(dictata de num_frames si num_pages), se mapeaza memoria virtuala si se adauga vectorul de pagini din memoria virtuala in vectorul de vectori de pagini. Fiecare element din vectorul de pagini este initializat tot in vm_alloc.
+		Se adauga informatiile necesare in variabila map primita ca parametru, se adauga in ceilalti vectori specificati mai sus, file descriptorii fisierelor si alte valori initiale.
+		
+	==== vm_free ====
+		am identificat a cata memorie virtuala trebuie eliberata, am demapat memoria virtuala, am inchis si am sters fisierele ram si swap corespunzatoare.
+		tot aici am sters din vectori elementele corespunzatoare acestei memorii
+	
+	==== increase_ram_offset ====
+		mareste offsetul la care se adauga o pagina in memoria ram. Cand acest offset este egal cu maximul de pagini suportate de ram, offset-ul se reseteaza la zero si se seteaza ram_full = 1. Din momentul in care ram_full este egal cu 1, de cate ori este nevoie de o pagina in ram, o alta pagina va merge in swap.
+		
+	==== get_page_index ====
+		gaseste indexul paginii virtuale care este mapata la ramoffset in fisierul ram si il returneaza.
+		Acest index este folosit atunci cand o pagina din memoria ram trebuie trimisa in swap pentru a face loc unei alte pagini.
+	
+	==== back_from_swap ====
+		aduce o pagina din swap in ram - mapand fisierul pentru ram in memorie la adresa paginii corespunzatoare din swap
+		
+	==== move_to_swap ====
+		muta din ram in swap o pagina.
+		Daca o pagina virtuala are alocat spatiu in ram, atunci fisierul de swap va fi mapat la aceasta adresa(cu un offset corespunzator), iar fisierul pentru ram va fi demapat de la aceasta adresa.
+		in ram, portiunea care a fost mapata la aceasta adresa(de dimensiunea unei paginii) va fi umpluta cu 0.
+		se copiaza cu autorul unui buffer continutul memoriei din ram in swap
+		seteaza informatiile din structura pentru pagina virtuala - struct page_table_entry
+	
+	==== vmsim_give_prot_read ====
+		mapeaza fisierul ram(cu un anumit offset) la adresa dictata de pagina din memoria virtuala
+		se seteaza si celelalte campuri din strucutura pentru pagina virtuala
+	
+	==== vmsim_give_prot_write ====
+		schimba protectia paginii fizice si updateaza structura corespunzatoare paginii virtuale;
+	
+	==== vmsim_exception_handler ====
+		trateaza semnalele de tip SIGSEGV
+		La primirea unui astfel de semnal, iau adresa din siginfo si verific pentru a vedea din ce memorie virtuala face parte. In functie de aceasta adresa determin care pagina este adresata si.
+		Daca statusul paginii este:
+			STATE_NOT_ALLOC:
+				atunci se mapeaza in ram si se dau drepturi de citire
+			STATE_IN_RAM:
+				se dau drepturi de scriere
+			STATE_IN_SWAP:
+				se mapeaza in ram
+De cate ori se fac aceset mapari, daca memoria ram este plina, se face swap out pentru cea mai veche mapare, si in acel loc din ram se mapeaza noua pagina.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

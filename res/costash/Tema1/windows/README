@@ -1,0 +1,35 @@
+*** Tema0 SO - Mini-Shell ***
+*** Șerban-Radoi Constantin 333CA ***
+*** Martie 2013 ***
+
+** Descriere **
+	Tema constă în implementarea unui mini shell.
+
+** Mod compilare **
+	nmake /f Makefile
+
+** Pentru a rula **
+	mini-shell.exe
+
+** Pentru a ieși din shell se rulează
+	exit sau quit
+
+** Listă fișiere **
+	* main.c		- Fișier ce conține functia main
+	* utils.h		- Fișier ce conține antete și macrouri utile 
+	* utils-lin.c	- Implementarea funcțiilor care definesc shell-ul
+	* parser.h		- Declarația funcțiilor parserului
+	* parser.tab.h	- Declarația funcțiilor generate de parser-ul flex
+	* parser.tab.c	- Implementarea funcțiilor generate de parser-ul flex
+	* parser.yy.c	- Implementarea funcțiilor generate de yacc
+	* Makefile      - Fișier makefile
+	* README        - Acest fișier
+
+** Detalii implementare **
+	Pentru rularea comenzilor simple am folosit CreateProcess. Pentru rularea
+în paralel am folosit CreateThread.
+	Pentru Pipe-uri, creez pipe-ul, parcurg arborele cât timp am pipe, până
+dau de comandă simplă, apoi rulez cele 2 comenzi.
+
+	Alte detalii se regăsesc și în comentariile din cod și nu cred că e necesar
+să le repet aici.

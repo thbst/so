@@ -1,0 +1,38 @@
+Badoiu Simona Andreea 331CB
+
+Pentru implementarea acestei teme am scris fisierul mpi.c. In acest fisier am implementat functia main si celelalte functii din mpi.h.
+
+Folosesc structura message_t pentru a trimite/a primi mesaje in/din cozi.
+
+In main, am creat un numar de cozi egal cu numarul de procese create. Am creat cozile pentru RDWR si le-am retinut intr-un vector de cozi.
+
+Am creat procesele si am executat programul primit ca parametru in fiecare proces.
+
+Pentru a avea numarul de procese si id-ul fiecarui proces, am trimis prin execvp, ca argumemente si aceste doua valori. In MPI_init, folosesc aceste valori pentru a seta doua variabile globale pe care le folosesc atunci cand este nevoie.
+
+In MPI_Send:
+	- in functie de destinatar, deschid coada corespunzatoare pentru a trimite mesajul. Mesajul este de tip message_t(acesta contine tag-ul, numarul de elemente trimise, id-ul procesului sursa si mesajul propriu zis);
+	- trimit mesajul in coada;
+	- inchid coada;
+	
+in MPI_Recv:
+	- deschid coada pentru citire(coada corespunzatoare id-ului propriu - deoarece oricine trimite mesaje unui proces le va trimite in coada corespunzatoare acelui proces);
+	- primesc mesajul din coada;
+	- pun informatiile in status, in cazul in care nu am primit MPI_STATUS_IGNORE;
+	- stabilesc cate elemente de tipul datatype s-au primit si copiez in buf datele primite(in functie de cate am primit);
+	- inchid coada;
+
+MPI_Get_count: pun in count valoarea _size din status;
+
+MPI_Finalize: verific daca se poate inchide si dau return conform enuntului;
+
+MPI_Init: setez variabilele globale no_procs si id, folosind argumentele primite;
+
+MPI_Initialized si MPI_Finalized: fac verificarile corespunzatoare
+
+MPI_Comm_size: pune in size numarul de procese;
+
+MPI_Comm_rank: pune in rank id ul procesului;
+
+In main, la sfarsit, astept procesele sa se termine si apoi inchid toate cozile create.
+

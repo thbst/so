@@ -1,0 +1,27 @@
+Badoiu Simona Andreea 331CB
+
+Pentru Tema1 SO - Linux am pornit de la scheletul de cod.
+
+In functia parse_simple
+	- daca, comanda primita era o comanda interna - cd, exit, quit, am apelat shell_cd, shell_exit, fara a crea un alt proces;
+	- la primirea unei comenzi externe, am creat un nou proces cu fork(), am tratat cazurile pentru redirectari si am executat comanda cu execv. Numele comenzii l-am obtinut cu get_word(), iar parametrii cu get_argv();
+		- pentru redirectari de tipul &>, am luat un caz special, in care am redirectat intai iesirea de eroare standard si apoi, cu append in acelasi fisier, am redirectat si iesirea standard.
+
+in functia parse_command
+	- pentru comenzile care se executa secvential, doar am rulat parse_command pentru fiecare din cele doua comenzi, in ordinea cmd1, cmd2
+	- pentru comenzile care trebuie sa se execute in paralel am folosit functia do_in_parallel;
+	- pentru pipe-uri am folosit functia do_on_pipe;
+	- pentru operatorul sau - executia comenzilor se termina atunci cand parse_command intoarce 0;
+	- pentru operatorul si - executia comenzilor se termina atunci cand parse_command intoarce o valoare diferita de 0.
+	
+Functia do_in_parallel:
+	- se pornesc doua procese diferite cu fork(). Fiecare proces executa cate o comanda: parse_command(cmd1, ...), parse_command(cmd2, ...). Se asteapta pana ce ambele procese se termina.
+
+Functia do_on_pipe:
+	- am pornit 2 procese. Al doilea proces este pornit de catre primul proces. Ideea principala este ca output-ul primei comenzi devine inputul celeilalte comenzi. In procesul 2 se scrie in pipe, iar in procesul 1 se citeste din pipe;
+	
+Functia set_var 
+	- primeste un nume si o valoare si seteaza variabila de mediu cu numele nume si valoarea valoare;
+
+Functiile do_redirect_in, do_redirect_out 
+	- ambele duplica descriptorul de fisier fd in descriptorul de fisier filedes folosind functia dup2(). Functia do_redirect_out primeste si un parametru care ii spune daca sa deschida fisierul pentru append sau pentru scriere.
