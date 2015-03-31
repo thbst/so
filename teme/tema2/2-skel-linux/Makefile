@@ -11,3 +11,5 @@ $(TARGET): $(OBJ) $(OBJ_PARSER)
 
 clean:
 	rm -rf $(OBJ) $(OBJ_PARSER) $(TARGET) *~
+zip:
+	zip Grupa_NumePrenume_SO_tema1.zip utils-lin.c utils.h README Makefile

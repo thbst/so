@@ -1,0 +1,44 @@
+--- Tema 2 SO - Mini-shell ---
+--- Nume Prenume Grupa ---
+--- Martie 2015 ---
+
+-- Descriere --
+Tema implementaza un shell simplu care suporta comenzi externe cu
+argumente multiple, comenzi interne, redirectari, pipe-uri, comenzi
+compuse, cu oricati operatori. 
+Tema a fost compilata si testata cu succes pe Linux folosind testele
+publice.
+
+Implementarea a fost facuta conform enuntului precizat, utilizand
+scheletul de cod pus la dispozitie.
+Codul a fost comentat si respecta regulile de coding style.
+Programul are o structura modulara bazata pe functii ce pot fi
+refolosite.
+in enunt.
+Am folosit recomandarile de pe wiki, implementand diferite macro-uri
+(eg. DIE, dprintf), ce au fost reutilizate periodic in functie de
+necesitati.
+
+Functia principala utilizata pentru acest program este parse_simple,
+care primeste ca parametri o structura simple_command_t, nivelul in
+arbore si parintele comenzii. Aceasta verifica ce fel de comanda se
+executa:
+	-comenzi interne 
+	-setarea unei variabile de environment
+	-comenzi externe 
+
+Per total, am apreciat scheletul de cod furnizat, care a ajutat la
+reducerea timpului necesar pentru implementare.
+
+-- Instructiuni compilare --
+    - Pe Linux:
+    make build
+
+-- Instructiuni rulare --
+    ./mini-shell
+
+-- Listă fișiere --
+    - utils-lin.c   - Implementarea temei
+    - utils.h       - Contine in plus macro-urile DIE si dprintf
+    - Makefile      - Makefile pentru Linux
+    - README        - Fisier cu explicatii despre tema
