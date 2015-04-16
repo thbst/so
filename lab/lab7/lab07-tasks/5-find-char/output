@@ -1,0 +1,34 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+100.76      0.02     0.02    16401     0.00     0.00  find_first_pos
+  0.00      0.02     0.00        1     0.00    20.15  find_all_pos
+  0.00      0.02     0.00        1     0.00     0.00  readstring
+
+			Call graph
+
+
+granularity: each sample hit covers 2 byte(s) for 49.62% of 0.02 seconds
+
+index % time    self  children    called     name
+                0.02    0.00   16401/16401       find_all_pos [2]
+[1]    100.0    0.02    0.00   16401         find_first_pos [1]
+-----------------------------------------------
+                0.00    0.02       1/1           main [3]
+[2]    100.0    0.00    0.02       1         find_all_pos [2]
+                0.02    0.00   16401/16401       find_first_pos [1]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]    100.0    0.00    0.02                 main [3]
+                0.00    0.02       1/1           find_all_pos [2]
+                0.00    0.00       1/1           readstring [4]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[4]      0.0    0.00    0.00       1         readstring [4]
+-----------------------------------------------
+
+Index by function name
+
+   [2] find_all_pos            [1] find_first_pos          [4] readstring
